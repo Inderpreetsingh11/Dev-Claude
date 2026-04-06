@@ -13,6 +13,8 @@ export function SettingsPage({ onToast }: SettingsPageProps) {
   const [settings, setSettings] = useLocalStorage<AppSettings>('medtrack:settings', DEFAULT_SETTINGS);
   const [ollamaUrl, setOllamaUrl] = useState(settings.ollamaUrl);
   const [modelName, setModelName] = useState(settings.modelName);
+  const [adminTaps, setAdminTaps] = useState(0);
+  const showAdmin = adminTaps >= 5;
 
   const handleSaveSettings = () => {
     setSettings({ ollamaUrl: ollamaUrl.trim(), modelName: modelName.trim() });
@@ -63,24 +65,31 @@ export function SettingsPage({ onToast }: SettingsPageProps) {
 
   return (
     <div className="space-y-8 max-w-lg">
-      <h2 className="text-lg font-bold text-slate-800">Settings</h2>
+      <h2
+        className="text-lg font-bold text-slate-800 select-none"
+        onClick={() => setAdminTaps((n) => n + 1)}
+      >
+        Settings
+      </h2>
 
-      <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">AI Configuration</h3>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Ollama URL</label>
-          <input type="text" value={ollamaUrl} onChange={(e) => setOllamaUrl(e.target.value)} className={inputClass} />
-          <p className="text-xs text-slate-400 mt-1">Default: /ollama (proxied to localhost:11434)</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Model Name</label>
-          <input type="text" value={modelName} onChange={(e) => setModelName(e.target.value)} className={inputClass} />
-          <p className="text-xs text-slate-400 mt-1">Default: gemma4</p>
-        </div>
-        <button onClick={handleSaveSettings} className="px-4 py-2 bg-medical-600 text-white rounded-lg text-sm hover:bg-medical-700 transition-colors">
-          Save Settings
-        </button>
-      </section>
+      {showAdmin && (
+        <section className="space-y-4">
+          <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">AI Configuration (Admin)</h3>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Ollama URL</label>
+            <input type="text" value={ollamaUrl} onChange={(e) => setOllamaUrl(e.target.value)} className={inputClass} />
+            <p className="text-xs text-slate-400 mt-1">Your Cloudflare Tunnel or ngrok URL</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Model Name</label>
+            <input type="text" value={modelName} onChange={(e) => setModelName(e.target.value)} className={inputClass} />
+            <p className="text-xs text-slate-400 mt-1">Default: gemma4:e4b</p>
+          </div>
+          <button onClick={handleSaveSettings} className="px-4 py-2 bg-medical-600 text-white rounded-lg text-sm hover:bg-medical-700 transition-colors">
+            Save Settings
+          </button>
+        </section>
+      )}
 
       <section className="space-y-4">
         <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Data Management</h3>
