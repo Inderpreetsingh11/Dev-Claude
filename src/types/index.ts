@@ -39,7 +39,7 @@ export interface AppSettings {
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  ollamaUrl: '/ollama',
+  ollamaUrl: import.meta.env.DEV ? '/ollama' : 'http://localhost:11434',
   modelName: 'gemma4',
 };
 
