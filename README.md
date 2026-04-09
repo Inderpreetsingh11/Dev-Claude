@@ -8,50 +8,35 @@ https://inderpreetsingh11.github.io/Dev-Claude/
 
 ## Operator Setup (MacBook)
 
-The AI backend runs on your MacBook via Ollama + Cloudflare Tunnel.
+The AI backend runs on your MacBook via Ollama + CORS proxy + Cloudflare Tunnel.
 
 ### 1. Install & run Ollama
 
 ```bash
 brew install ollama
 ollama pull gemma4:e4b
-OLLAMA_ORIGINS=* ollama serve
+ollama serve
 ```
 
-### 2. Expose to internet
+### 2. Run the CORS proxy (new terminal tab)
 
 ```bash
-# Option A: Cloudflare Tunnel (free, no account needed)
-brew install cloudflared
-cloudflared tunnel --url http://localhost:11434
-
-# Option B: ngrok
-ngrok http 11434
+node cors-proxy.js
 ```
 
-### 3. Set the tunnel URL
+This runs on port 11435 and forwards to Ollama on 11434 with CORS headers.
 
-**Option A — GitHub variable (persists across deploys):**
-
-Go to GitHub repo → Settings → Secrets and variables → Actions → Variables tab → New variable:
-- Name: `VITE_OLLAMA_URL`
-- Value: `https://your-tunnel-url.trycloudflare.com`
-
-Re-run the deploy workflow.
-
-**Option B — In-app admin mode:**
-
-Open the app → Settings → tap "Settings" header 5 times → enter the tunnel URL → Save.
-
-### For persistent tunnel URLs
-
-Use Cloudflare named tunnels (free with Cloudflare account):
+### 3. Expose to internet (new terminal tab)
 
 ```bash
-cloudflared tunnel create medtrack
-cloudflared tunnel route dns medtrack medtrack.yourdomain.com
-cloudflared tunnel run medtrack
+cloudflared tunnel --url http://localhost:11435
 ```
+
+Copy the tunnel URL (e.g. `https://abc-xyz.trycloudflare.com`) and set it in the app.
+
+### 4. Set the tunnel URL in the app
+
+Open app → Settings → tap "Settings" header 5 times → paste URL → Save.
 
 ## Development
 
